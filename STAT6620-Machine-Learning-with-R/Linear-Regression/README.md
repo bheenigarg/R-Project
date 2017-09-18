@@ -17,3 +17,10 @@ The insurance.csv file includes 1,338 examples of beneficiaries currently enroll
 • `smoker`: This is yes or no depending on whether the insured regularly smokes tobacco.
 
 • `region`: This is the beneficiary's place of residence in the U.S., divided into four geographic regions: northeast, southeast, southwest, or northwest.
+
+## Estimating the quality of wines with Regression Trees 
+
+This analysis aims to estimate quality of wine on a scale of 0 (very bad) to 10 (excellent) depending on numerous factors that contribute to the profitability of a winery. 
+
+The data used for the study comes from [UCI Machine Learning Data Repository](https://archive.ics.uci.edu/ml/datasets/wine+quality).
+The white wine data includes information on 11 chemical properties of 4,898 wine samples. For each wine, a laboratory analysis measured characteristics such as the acidity, sugar content, chlorides, sulfur, alcohol, pH, and density. 
