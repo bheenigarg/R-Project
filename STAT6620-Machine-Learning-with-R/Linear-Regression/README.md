@@ -4,9 +4,9 @@ The goal of the analysis is to estimate the average medical care expenses to ena
 
 The dataset used is simulated containing medical expenses for patients in the United States. These data were created for [Machine Learning in R- Brett Lantz](https://www.amazon.com/Machine-Learning-Second-Brett-Lantz/dp/1784393908) using demographic statistics from the U.S. Census Bureau, and thus approximately reflect real-world conditions.
 
-The insurance.csv  le includes 1,338 examples of bene ciaries currently enrolled in the insurance plan, with features indicating characteristics of the patient as well as the total medical expenses charged to the plan for the calendar year. The features are:
+The insurance.csv file includes 1,338 examples of beneficiaries currently enrolled in the insurance plan, with features indicating characteristics of the patient as well as the total medical expenses charged to the plan for the calendar year. The features are:
 
-• age: This is an integer indicating the age of the primary bene ciary (excluding those above 64 years, since they are generally covered by the government).
+• age: This is an integer indicating the age of the primary beneficiary (excluding those above 64 years, since they are generally covered by the government).
 
 • sex: This is the policy holder's gender, either male or female.
 
@@ -16,4 +16,4 @@ The insurance.csv  le includes 1,338 examples of bene ciaries currently enrolled
 
 • smoker: This is yes or no depending on whether the insured regularly smokes tobacco.
 
-• region: This is the bene ciary's place of residence in the U.S., divided into four geographic regions: northeast, southeast, southwest, or northwest.
+• region: This is the beneficiary's place of residence in the U.S., divided into four geographic regions: northeast, southeast, southwest, or northwest.
