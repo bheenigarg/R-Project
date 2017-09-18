@@ -1,6 +1,6 @@
 ## Identifying Risky Bank loans using Decision Trees
 
-Uses dataset from the [UCI Machine Learning Data Repository](https://archive.ics.uci.edu/ml/datasets/statlog+(german+credit+data). 
+Uses dataset from the [UCI Machine Learning Data Repository](https://archive.ics.uci.edu/ml/datasets/statlog+(german+credit+data)). 
 They represent loans obtained from a credit agency in Germany.
 
 The credit dataset includes 1,000 examples of loans, plus a combination of numeric and nominal features indicating characteristics of the loan and the loan applicant. A class variable indicates whether the loan went into default.
