@@ -13,7 +13,6 @@ The dataset includes information on 8,124 mushroom samples from 23 species of gi
 
 ## Implementing Decison Trees (Bank loans dataset) on Weka using 10-fold cross-validation
 
-The last part of the assignment includes implementing the decision trees technique on [Weka](http://www.cs.waikato.ac.nz/ml/index.html), data mining software from the University of Waikato, New Zealand. 
-
+The last part of the assignment includes implementing the decision trees technique in [Weka](http://www.cs.waikato.ac.nz/ml/index.html) environment.
 
 
