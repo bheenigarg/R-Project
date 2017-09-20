@@ -4,7 +4,7 @@ The goal of the analysis is to estimate the average medical care expenses to ena
 
 The dataset used is simulated containing medical expenses for patients in the United States. These data were created for [Machine Learning in R- Brett Lantz](https://www.amazon.com/Machine-Learning-Second-Brett-Lantz/dp/1784393908) using demographic statistics from the U.S. Census Bureau, and thus approximately reflect real-world conditions.
 
-The insurance.csv file includes 1,338 examples of beneficiaries currently enrolled in the insurance plan, with features indicating characteristics of the patient as well as the total medical expenses charged to the plan for the calendar year. The features are:
+The `insurance.csv` file includes 1,338 examples of beneficiaries currently enrolled in the insurance plan, with features indicating characteristics of the patient as well as the total medical expenses charged to the plan for the calendar year. The features are:
 
 • `age`: This is an integer indicating the age of the primary beneficiary (excluding those above 64 years, since they are generally covered by the government).
 
