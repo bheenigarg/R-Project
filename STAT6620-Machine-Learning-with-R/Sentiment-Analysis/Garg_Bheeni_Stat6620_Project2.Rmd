@@ -1,0 +1,214 @@
+---
+title: "Garg_Bheeni_Stat6620_Project2"
+author: "Bheeni Garg"
+date: "June 10, 2016"
+output: pdf_document
+---
+
+One of the job descriptions I found online---
+
+Responsibilities:
+
+-Analyze and model structured data and implement algorithms to support analysis using advanced statistical and mathematical methods from statistics, machine learning, data mining, econometrics, and operations research
+
+-Perform Statistical Natural Language Processing to mine unstructured data, using methods such as document clustering, topic analysis, named entity recognition, document classification, and **sentiment analysis**
+
+So, I chose to do the following project------
+
+## Project -- Sentiment Analysis of Yelp Ratings using Naive Bayes Classifier------
+
+### Introduction:
+
+Yelp, founded in 2004, is a multinational corporation that publishes crowd-sourced online reviews on local businesses.
+
+As of 2014, Yelp.com had 57 million reviews and 132 million monthly visitors [1]. A portion of their large dataset is available on the Yelp Dataset Challenge homepage, which includes data on 42,153 businesses, 252,898 users, and 1,125,458 reviews from the cities of Phoenix, Las Vegas, Madison, Waterloo, and Edinburgh [2]. For businesses, the dataset includes business name, neighborhood, city, latitude and longitude, average review rating, number of reviews, and categories such as “good for lunch”. The dataset also includes review text and rating.
+
+**In this project, I have attempted to build a classifier to classify reviews as either 5-star or 1-star using only the review text! This may further be used to identify potential factors that may affect business performance on Yelp and then predict future ratings based on the identified important features. Sentiments, supposedly, have the highest predictive power and hence need to classified accurately.**
+
+### Step 1: Collecting Data
+The data used for the project is taken from the Kaggle Competition page [link](https://www.kaggle.com/c/yelp-recsys-2013), Yelp Business Rating Prediction. 
+
+The dataset consists of 10,000 observations with 10 features.
+
+### Step 2: Exploring and preparing data------
+
+```{r warning=FALSE, message=FALSE, tidy=TRUE}
+yelp <- read.csv("yelp.csv")
+str(yelp)
+
+df1 <- subset(yelp, stars==1 | stars ==5)
+df1[10:20,]
+yelp_new <- as.data.frame(df1[,c("stars","text")])
+
+# examine the structure of yelp data
+str(yelp_new)
+
+# convert stars 1, 5 to factor.
+yelp_new$stars<- factor(yelp_new$stars)
+
+# convert text to character
+yelp_new$text <- as.character(yelp_new$text)
+
+# examine the type variable more carefully
+str(yelp_new$stars)
+str(yelp_new$text)
+str(yelp_new)
+table(yelp_new$stars)
+
+# build a corpus using the text mining (tm) package
+library(tm)
+yelp_corpus <- VCorpus(VectorSource(yelp_new$text))
+
+# examine the yelp_new corpus
+print(yelp_corpus)
+inspect(yelp_corpus[1:2])
+
+as.character(yelp_corpus[[1]])
+lapply(yelp_corpus[1:2], as.character)
+
+# clean up the corpus using tm_map()
+yelp_corpus_clean <- tm_map(yelp_corpus, content_transformer(tolower))
+
+# show the difference between sms_corpus and corpus_clean
+as.character(yelp_corpus_clean[[1]])
+
+yelp_corpus_clean <- tm_map(yelp_corpus_clean, removeNumbers) # remove numbers
+yelp_corpus_clean <- tm_map(yelp_corpus_clean, removeWords, stopwords()) # remove stop words
+yelp_corpus_clean <- tm_map(yelp_corpus_clean, removePunctuation) # remove punctuation
+
+library(SnowballC)
+yelp_corpus_clean <- tm_map(yelp_corpus_clean, stemDocument) # remove word stems
+yelp_corpus_clean<- tm_map(yelp_corpus_clean, stripWhitespace) # eliminate unneeded whitespace
+
+# examine the final clean corpus
+lapply(yelp_corpus_clean[1:3], as.character)
+
+# create a document-term sparse matrix
+yelp_dtm <- DocumentTermMatrix(yelp_corpus_clean)
+  
+# compare the result
+str(yelp_dtm)
+
+# creating training and test datasets
+require(caTools)
+set.seed(101) 
+
+yelp_dtm_train <- yelp_dtm[1:2860, ]
+yelp_dtm_test  <- yelp_dtm[2861:4086, ]
+
+# also save the labels
+yelp_train_labels <- yelp_new[1:2860, ]$stars
+yelp_test_labels  <- yelp_new[2861:4086, ]$stars
+
+# check that the proportion of ratings is similar
+prop.table(table(yelp_train_labels))
+prop.table(table(yelp_test_labels))
+
+
+# word cloud visualization
+library(wordcloud)
+wordcloud(yelp_corpus_clean, min.freq = 100, random.order = FALSE)
+
+# subset the training data into star 1 and star 5 groups
+star1 <- subset(yelp_new, stars == "1")
+star5  <- subset(yelp_new, stars == "5")
+
+wordcloud(star1$text, max.words = 60, scale = c(3, 0.5))
+wordcloud(star5$text, max.words = 60, scale = c(3, 0.5))
+
+yelp_dtm_freq_train <- removeSparseTerms(yelp_dtm_train, 0.999)
+yelp_dtm_freq_train[1:10,]
+
+# save frequently-appearing terms to a character vector
+yelp_freq_words <- findFreqTerms(yelp_dtm_train, 5)
+str(yelp_freq_words)
+
+# create DTMs with only the frequent terms
+yelp_dtm_freq_train <- yelp_dtm_train[ , yelp_freq_words]
+yelp_dtm_freq_test <- yelp_dtm_test[ , yelp_freq_words]
+
+# convert counts to a factor
+convert_counts <- function(x) {
+  x <- ifelse(x > 0, "Yes", "No")
+}
+
+# apply() convert_counts() to columns of train/test data
+yelp_train <- apply(yelp_dtm_freq_train, MARGIN = 2, convert_counts)
+yelp_test  <- apply(yelp_dtm_freq_test, MARGIN = 2, convert_counts)
+```
+
+
+### Step 3: Training a model on the data ----
+
+```{r warning=FALSE, message=FALSE, tidy=TRUE}
+library(e1071)
+rating_classifier <- naiveBayes(yelp_train, yelp_train_labels)
+```
+
+
+### Step 4: Evaluating model performance ----
+
+```{r warning=FALSE, message=FALSE, tidy=TRUE}
+yelp_test_pred <- predict(rating_classifier, yelp_test)
+yelp_test_pred_prob <- predict(rating_classifier, yelp_test, type = "raw")
+
+head(yelp_test_pred_prob)
+
+library(gmodels)
+CrossTable(yelp_test_pred, yelp_test_labels,
+           prop.chisq = FALSE, prop.t = FALSE, prop.r = FALSE,
+           dnn = c('predicted', 'actual'))
+
+## Accuracy
+(160+915)/1226
+
+## Sensitivity
+915/987
+
+## Specificity
+160/239
+```
+
+We see that the sensitivity is approx. 0.93 and the sensitivity is approx. 0.67. Thus, the model has a much easier time detecting five-star reviews than one-star reviews.
+
+```{r warning=FALSE, message=FALSE, tidy=TRUE}
+
+## Plotting the ROC 
+library(ROCR)
+yelp_test_pred_prob <- predict(rating_classifier, yelp_test, type = "raw")
+ROCRpredTest = prediction(yelp_test_pred_prob[,2], yelp_test_labels=="5")
+ROCRperf <- performance(ROCRpredTest, "tpr","fpr")
+str(ROCRperf)
+plot(ROCRperf)
+plot(ROCRperf, colorize =TRUE)
+plot(ROCRperf, colorize =TRUE, print.cutoffs.at= seq(0,1,0.1), text.adj = c(-0.2,1.7))
+
+## Area Under the curve (AUC)
+perf.auc<- performance(ROCRpredTest,measure = "auc")
+str(perf.auc)
+unlist(perf.auc@y.values)
+
+```
+
+Although the model gives a high auc (0.931), the tpr is higher than the true negative rate. We can balance the sensitivity and the specificity by selecting the optimum threshold(cutoff) for predicting a 5-star review.
+
+### Step 5: Improving model performance
+
+```{r warning=FALSE, message=FALSE, tidy=TRUE}
+opt.cut = function(perf, pred){
+    cut.ind = mapply(FUN=function(x, y, p){
+        d = (x - 0)^2 + (y-1)^2
+        ind = which(d == min(d))
+        c(sensitivity = y[[ind]], specificity = 1-x[[ind]], 
+            cutoff = p[[ind]])
+    }, perf@x.values, perf@y.values, pred@cutoffs)
+}
+print(opt.cut(ROCRperf, ROCRpredTest))
+```
+
+At a threshold of approximately 0.988, the sensitivity and specificity are both approximately 0.86. This classifier can be used to classify the reviews(just the text) as 1- or 5-star which can later be used predict the rating a user would assign to a business. Laterally, it could be used by businesses to improve and achieve higher ratings.
+
+---------------------
+
+
+
